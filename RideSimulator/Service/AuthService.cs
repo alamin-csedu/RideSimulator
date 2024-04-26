@@ -55,6 +55,11 @@ namespace RideSimulator.Service
                 if (result.Succeeded)
                 {
                     var createdUser = _dbContext.Users.Where(u => u.PhoneNumber == driver.PhoneNumber).FirstOrDefault();
+                    if (!await _roleManager.RoleExistsAsync("Driver"))
+                    {
+                       await  _roleManager.CreateAsync(new IdentityRole("Driver"));
+                    }
+                    await _userManager.AddToRoleAsync(createdUser, "Driver");
                     LoginResponseDto responseDto = new LoginResponseDto()
                     {
                         PhoneNumber = createdUser.PhoneNumber,
@@ -108,6 +113,11 @@ namespace RideSimulator.Service
                 if (result.Succeeded)
                 {
                     var createdUser = _dbContext.Users.Where(u => u.PhoneNumber == rider.PhoneNumber).FirstOrDefault();
+                    if (!await _roleManager.RoleExistsAsync("Rider"))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole("Rider"));
+                    }
+                    await _userManager.AddToRoleAsync(createdUser, "Rider");
                     LoginResponseDto responseDto = new LoginResponseDto()
                     {
                         PhoneNumber = createdUser.PhoneNumber,
