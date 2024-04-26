@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace RideSimulator.Models
 {
@@ -15,5 +17,8 @@ namespace RideSimulator.Models
         public string UserId { get; set; }
 
         public ApplicationUser User { get; set; }
+        [JsonIgnore]
+        [IgnoreDataMember]
+        public ICollection<RideRequest> RideRequests { get; set; }
     }
 }

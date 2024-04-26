@@ -14,6 +14,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<DriverUser> Drivers { get; set; }
     public DbSet<ApplicationUser> Users { get; set; }
     public DbSet<RiderUser> Riders { get; set; }
+    public DbSet<RideRequest>? RideRequests { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +30,16 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(a => a.RiderUser)
             .WithOne(r => r.User)
             .HasForeignKey<RiderUser>(r => r.UserId);
+
+        modelBuilder.Entity<RideRequest>()
+            .HasOne(b  => b.RiderUser)
+            .WithMany(a => a.RideRequests).
+            HasForeignKey(a => a.RiderId).OnDelete(DeleteBehavior.ClientSetNull); ;
+
+        modelBuilder.Entity<RideRequest>()
+           .HasOne(b => b.DriverUser)
+           .WithMany(a => a.RideRequests).
+           HasForeignKey(a => a.RequestedDriverId).OnDelete(DeleteBehavior.ClientSetNull); ;
     }
 
 
