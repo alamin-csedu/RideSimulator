@@ -13,8 +13,8 @@ namespace RideSimulator.Service
             HttpWebResponse response = null;
             try
             {
-                String api_key = "1UdUQPcwTjoYEljcwM5L"; //Your api_key
-                String senderid = "8809617618250"; //Your Sender ID
+                String api_key = "4fHZIXFuZiYqlNkXZRwX"; //Your api_key
+                String senderid = "8809617618264"; //Your Sender ID
                 String number = recipient;
                 String message = System.Uri.EscapeUriString(String.Format("Your OTP for login is {0}",otp)); 
                 String url = "http://bulksmsbd.net/api/smsapi?api_key=" + api_key + "&senderid=" + senderid + "&number=" + number + "&message=" + message;
