@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Pathao.Models
+namespace RideSimulator.Models
 {
     public class ApplicationUser : IdentityUser
     {

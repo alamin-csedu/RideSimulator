@@ -1,10 +1,11 @@
 ﻿using AuthAPI.Models.DTO;
 using Microsoft.AspNetCore.Identity;
-using Pathao.Data;
-using Pathao.Models;
-using Pathao.Models.DTO;
+using RideSimulator.Data;
+using RideSimulator.Models;
+using RideSimulator.Models.DTO;
+using RideSimulator.Service;
 
-namespace Pathao.Service
+namespace RideSimulator.Service
 {
     public class AuthService : IAuthService
     {
@@ -12,21 +13,31 @@ namespace Pathao.Service
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly INotificationService _notificationService;
         //private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
         public AuthService(AppDbContext dbContext, RoleManager<IdentityRole> roleManager,
-           UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+           UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+           INotificationService notificationService)
         {
             _dbContext = dbContext;
             _roleManager = roleManager;
             _userManager = userManager;
             _signInManager = signInManager;
+            _notificationService = notificationService;
 
         }
 
-        public Task<string> LoginAsync(string phone, string password)
+        public async Task<bool> TryLoginAsync(string phone)
         {
-            throw new NotImplementedException();
+            return false;
+           
+
+        }
+
+        public async Task<LoginResponseDto> LoginAsync(string otp)
+        {
+            return null;
         }
 
         public async Task<LoginResponseDto> RegisterDriverAsync(DriverDto driver)
@@ -36,7 +47,7 @@ namespace Pathao.Service
                 PhoneNumber = driver.PhoneNumber,
                 UserName = driver.PhoneNumber,
                 FullName = driver.FirstName + " " + driver.LastName,
-                
+                TwoFactorEnabled = true
             };
             var result = await _userManager.CreateAsync(user);
             try
@@ -89,6 +100,7 @@ namespace Pathao.Service
                 UserName = rider.PhoneNumber,
                 Email = rider.Email,
                 FullName = rider.FirstName + " " + rider.LastName,
+                TwoFactorEnabled = true
             };
             var result = await _userManager.CreateAsync(user);
             try
@@ -129,5 +141,7 @@ namespace Pathao.Service
                 };
             }
         }
+
+       
     }
 }

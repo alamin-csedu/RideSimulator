@@ -1,18 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Pathao.Models.DTO;
-using Pathao.Service;
-namespace Pathao.Controllers;
+﻿using AuthAPI.Models.DTO;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using RideSimulator.Data;
+using RideSimulator.Models;
+using RideSimulator.Models.DTO;
+using RideSimulator.Service;
+namespace RideSimulator.Controllers;
 
 
 [Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
 {
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly INotificationService _notificationService;
     private readonly IAuthService _authService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    //private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
-    public AuthController(IAuthService authService)
+    public AuthController(UserManager<ApplicationUser> userManager,
+       INotificationService notificationService, IAuthService authService, IHttpContextAccessor httpContextAccessor)
     {
+        _userManager = userManager;
+        _notificationService = notificationService;
         _authService = authService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpPost("register/rider")]
@@ -38,12 +50,37 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(string phone, string password)
+    public async Task<IActionResult> Login(string phone)
     {
-        var result = await _authService.LoginAsync(phone, password);
-        if (!string.IsNullOrEmpty(result))
-            return Ok(new { token = result });
+        try
+        {
+            var user = await _userManager.FindByNameAsync(phone);
+            if (user is not null)
+            {
+                var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Phone");
+                await _notificationService.SendOTPAsync(phone, token);
+                _httpContextAccessor.HttpContext.Session.SetString(phone+token.ToString(), token);
+                return Ok(new { Message = "OTP send successfully to your phone" , otp = token});
+            }
+            return BadRequest(new { Message = "Something wrong" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = "Something wrong" });
+        }
+    }
+
+    [HttpPost("login/{otp}")]
+    public async Task<IActionResult> LoginWithCode(string phone,string otp)
+    {
+        _httpContextAccessor.HttpContext.Session.TryGetValue(phone+otp, out var value);
+        if (value is not null)
+        {
+            return Ok(new { Message = "Logged in successfully" });
+        }
         else
-            return Unauthorized();
+        {
+            return BadRequest(new { Message = "Something wrong" });
+        }
     }
 }
