@@ -28,6 +28,7 @@ namespace RideSimulator.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -160,10 +161,10 @@ namespace RideSimulator.Migrations
                 {
                     ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CurrentLogtitude = table.Column<int>(type: "int", nullable: false),
-                    CurrentLattitude = table.Column<int>(type: "int", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CurrentLogtitude = table.Column<int>(type: "int", nullable: true),
+                    CurrentLattitude = table.Column<int>(type: "int", nullable: true),
                     Rating = table.Column<double>(type: "float", nullable: false),
                     BikeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BikeCC = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -188,8 +189,8 @@ namespace RideSimulator.Migrations
                 {
                     ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -201,6 +202,36 @@ namespace RideSimulator.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RideRequest",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RiderPickupLongtitue = table.Column<int>(type: "int", nullable: false),
+                    RiderPickLattitude = table.Column<int>(type: "int", nullable: false),
+                    RiderDestinationLongtitude = table.Column<int>(type: "int", nullable: false),
+                    RiderDestinationLattitude = table.Column<int>(type: "int", nullable: false),
+                    Far = table.Column<double>(type: "float", nullable: false),
+                    ratingByRider = table.Column<double>(type: "float", nullable: false),
+                    ratingByDriver = table.Column<double>(type: "float", nullable: false),
+                    RiderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequestedDriverId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RideRequest", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_RideRequest_Drivers_RequestedDriverId",
+                        column: x => x.RequestedDriverId,
+                        principalTable: "Drivers",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RideRequest_Riders_RiderId",
+                        column: x => x.RiderId,
+                        principalTable: "Riders",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateIndex(
@@ -249,6 +280,16 @@ namespace RideSimulator.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_RideRequest_RequestedDriverId",
+                table: "RideRequest",
+                column: "RequestedDriverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RideRequest_RiderId",
+                table: "RideRequest",
+                column: "RiderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Riders_UserId",
                 table: "Riders",
                 column: "UserId",
@@ -273,13 +314,16 @@ namespace RideSimulator.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "RideRequest");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
                 name: "Drivers");
 
             migrationBuilder.DropTable(
                 name: "Riders");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using RideSimulator.Data;
+using RideSimulator.Models;
 using RideSimulator.Models.DTO;
 using System.Security.Claims;
 
@@ -9,12 +10,39 @@ namespace RideSimulator.Service
     {
         private readonly AppDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public DriverService(AppDbContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly IRiderService _riderService;
+        public DriverService(AppDbContext context, IHttpContextAccessor httpContextAccessor, IRiderService riderService)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor; 
+            _riderService = riderService;
 
         }
+
+        public async Task<bool> DriverActions(Guid requestId, Status status)
+        {
+            try
+            {
+                var rideRequest = _context.RideRequests.FirstOrDefault(p => p.ID == requestId);
+                rideRequest.Status = status;
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+           catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+
+
+        }
+
+        public Task<RideRequest> GetRequest()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<bool> PingDriverLocation(DriverLocationDto driverLocationDto)
         {
             string driverUserId;
