@@ -70,9 +70,9 @@ public class AuthController : ControllerBase
                 var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Phone");
                 await _notificationService.SendOTPAsync(phone, token);
                 _httpContextAccessor.HttpContext.Session.SetString(phone+token.ToString(), token);
-                return Ok(new { Message = "OTP send successfully to your phone" , otp = token});
+                return Ok(new { Message = "OTP send successfully to your phone"});
             }
-            return BadRequest(new { Message = "Something wrong" });
+            return BadRequest(new { Message = "No user found with this phone number, please register first" });
         }
         catch (Exception ex)
         {
@@ -98,7 +98,7 @@ public class AuthController : ControllerBase
         }
         else
         {
-            return BadRequest(new { Message = "Something wrong" });
+            return BadRequest(new { Message = "Wrong OTP" });
         }
     }
 

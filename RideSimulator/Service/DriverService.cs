@@ -38,11 +38,6 @@ namespace RideSimulator.Service
 
         }
 
-        public Task<RideRequest> GetRequest()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> PingDriverLocation(DriverLocationDto driverLocationDto)
         {
             string driverUserId;

@@ -7,7 +7,5 @@ namespace RideSimulator.Service
     {
         Task<LoginResponseDto> RegisterRiderAsync(RiderDto rider);
         Task<LoginResponseDto> RegisterDriverAsync(DriverDto driver);
-        Task<bool> TryLoginAsync(string phone);
-        Task<LoginResponseDto> LoginAsync(string code);
     }
 }

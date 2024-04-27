@@ -28,18 +28,6 @@ namespace RideSimulator.Service
 
         }
 
-        public async Task<bool> TryLoginAsync(string phone)
-        {
-            return false;
-           
-
-        }
-
-        public async Task<LoginResponseDto> LoginAsync(string otp)
-        {
-            return null;
-        }
-
         public async Task<LoginResponseDto> RegisterDriverAsync(DriverDto driver)
         {
             ApplicationUser user = new()
