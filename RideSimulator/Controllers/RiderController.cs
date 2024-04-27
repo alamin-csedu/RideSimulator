@@ -23,16 +23,37 @@ namespace RideSimulator.Controllers
         [HttpPost("request-ride")]
         public async Task<IActionResult> RequestRide(RequestRideDTO requestRide)
         {
-            var result = await _riderService.RequestRide(requestRide);
-            return Ok(result);
+            try
+            {
+                var requestedRide = await _riderService.RequestRide(requestRide);
+                return Ok(requestedRide);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+           
+            
         }
 
        
-        [HttpPost("nearest-driver")]
+        [HttpGet("nearest-driver/{requestRideId}")]
         public async Task<IActionResult> NearestDriver(Guid requestRideId)
         {
-            var result = await _riderService.NearestDriver(requestRideId); 
-            return Ok(result);
+            if(requestRideId == Guid.Empty)
+            {
+                return BadRequest(new {Message = "RequestId can not be null"});
+            }
+            try
+            {
+                var topThreeNearestDriversSortedByDistance = await _riderService.NearestDriver(requestRideId);
+                return Ok(topThreeNearestDriversSortedByDistance);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+           
         }
 
 
@@ -41,12 +62,12 @@ namespace RideSimulator.Controllers
         [HttpGet("confirm-rider")]
         public async Task<IActionResult> ConfirmDriver(Guid requestId, Guid driverId)
         {
-            var result = await _riderService.ConfirmDriver(requestId,driverId);
-            if(result is null)
+            var confirmedRideRequest = await _riderService.ConfirmDriver(requestId,driverId);
+            if(confirmedRideRequest is null)
             {
-                return Ok(new { Message = "Rider is anavailable at this moment" });
+                return Ok(new { Message = "Rider is unavailable at this moment" });
             }
-            return Ok(result);
+            return Ok(confirmedRideRequest);
         }
 
 
