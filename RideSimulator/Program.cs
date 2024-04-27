@@ -8,10 +8,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var dbHost = "localhost";
+var dbName = "RideSimulator";
+var password = "pathao1234";
 
+var connectionString = $"Data Source={dbHost};Initial Catalog={dbName};User Id=sa;Password={password};";
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(connectionString);
 });
 builder.Services
     .AddAuthentication(x =>
