@@ -28,9 +28,13 @@ namespace RideSimulator.Controllers
         }
 
        
-        [HttpPost("nearest-driver")]
+        [HttpGet("nearest-driver/{requestRideId}")]
         public async Task<IActionResult> NearestDriver(Guid requestRideId)
         {
+            if(requestRideId == Guid.Empty)
+            {
+                return BadRequest(new {Message = "RequestId can not be null"});
+            }
             var result = await _riderService.NearestDriver(requestRideId); 
             return Ok(result);
         }

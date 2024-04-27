@@ -8,10 +8,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+var password = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
 
+var connectionString = $"Server={dbHost};Initial Catalog={dbName};User Id=SA;Password={password}";
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(connectionString);
 });
 builder.Services
     .AddAuthentication(x =>

@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using RideSimulator.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace RideSimulator.Data;
 
@@ -9,6 +12,19 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
+        try
+        {
+            var databaseCreator = Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
+            if(databaseCreator != null)
+            {
+                if (!databaseCreator.CanConnect()) databaseCreator.Create();
+                if(!databaseCreator.HasTables()) databaseCreator.CreateTables();  
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
     }
 
     public DbSet<DriverUser> Drivers { get; set; }
