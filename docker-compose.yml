@@ -1,0 +1,24 @@
+version: '3'
+
+networks:
+  backend:
+
+services:
+  ridersimulatordb:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+        ACCEPT_EULA: "Y"
+        MSSQL_SA_PASSWORD: "Pathao@1234"
+    ports:
+      - "1433:1433"
+  ridesimulator:
+    image: ${DOCKER_REGISTRY-}ridesimulator
+    build:
+      context: .
+      dockerfile: RideSimulator/Dockerfile
+    ports:
+      - 8002:80 
+    environment:
+      - DB_HOST=ridersimulatordb
+      - DB_NAME=ridesimulator
+      - DB_SA_PASSWORD=Pathao@1234
