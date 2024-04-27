@@ -4,23 +4,23 @@
 
 namespace RideSimulator.Migrations
 {
-    public partial class add_fullname_in_appuser : Migration
+    public partial class add_status : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "FullName",
-                table: "AspNetUsers",
-                type: "nvarchar(max)",
+            migrationBuilder.AddColumn<int>(
+                name: "Status",
+                table: "RideRequests",
+                type: "int",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "FullName",
-                table: "AspNetUsers");
+                name: "Status",
+                table: "RideRequests");
         }
     }
 }

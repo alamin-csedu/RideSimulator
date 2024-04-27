@@ -12,8 +12,8 @@ using RideSimulator.Data;
 namespace RideSimulator.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240425162317_make_some_field_nullable")]
-    partial class make_some_field_nullable
+    [Migration("20240426131107_make_some_field_null")]
+    partial class make_some_field_null
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -157,7 +157,7 @@ namespace RideSimulator.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Pathao.Models.ApplicationUser", b =>
+            modelBuilder.Entity("RideSimulator.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -226,7 +226,7 @@ namespace RideSimulator.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Pathao.Models.DriverUser", b =>
+            modelBuilder.Entity("RideSimulator.Models.DriverUser", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -277,7 +277,49 @@ namespace RideSimulator.Migrations
                     b.ToTable("Drivers");
                 });
 
-            modelBuilder.Entity("Pathao.Models.RiderUser", b =>
+            modelBuilder.Entity("RideSimulator.Models.RideRequest", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double?>("Far")
+                        .HasColumnType("float");
+
+                    b.Property<Guid?>("RequestedDriverId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RiderDestinationLattitude")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RiderDestinationLongtitude")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("RiderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RiderPickLattitude")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RiderPickupLongtitue")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("ratingByDriver")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("ratingByRider")
+                        .HasColumnType("float");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("RequestedDriverId");
+
+                    b.HasIndex("RiderId");
+
+                    b.ToTable("RideRequest");
+                });
+
+            modelBuilder.Entity("RideSimulator.Models.RiderUser", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -316,7 +358,7 @@ namespace RideSimulator.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Pathao.Models.ApplicationUser", null)
+                    b.HasOne("RideSimulator.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -325,7 +367,7 @@ namespace RideSimulator.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Pathao.Models.ApplicationUser", null)
+                    b.HasOne("RideSimulator.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -340,7 +382,7 @@ namespace RideSimulator.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pathao.Models.ApplicationUser", null)
+                    b.HasOne("RideSimulator.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -349,42 +391,67 @@ namespace RideSimulator.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Pathao.Models.ApplicationUser", null)
+                    b.HasOne("RideSimulator.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Pathao.Models.DriverUser", b =>
+            modelBuilder.Entity("RideSimulator.Models.DriverUser", b =>
                 {
-                    b.HasOne("Pathao.Models.ApplicationUser", "User")
+                    b.HasOne("RideSimulator.Models.ApplicationUser", "User")
                         .WithOne("DriverUser")
-                        .HasForeignKey("Pathao.Models.DriverUser", "UserId")
+                        .HasForeignKey("RideSimulator.Models.DriverUser", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Pathao.Models.RiderUser", b =>
+            modelBuilder.Entity("RideSimulator.Models.RideRequest", b =>
                 {
-                    b.HasOne("Pathao.Models.ApplicationUser", "User")
+                    b.HasOne("RideSimulator.Models.DriverUser", "DriverUser")
+                        .WithMany("RideRequests")
+                        .HasForeignKey("RequestedDriverId");
+
+                    b.HasOne("RideSimulator.Models.RiderUser", "RiderUser")
+                        .WithMany("RideRequests")
+                        .HasForeignKey("RiderId");
+
+                    b.Navigation("DriverUser");
+
+                    b.Navigation("RiderUser");
+                });
+
+            modelBuilder.Entity("RideSimulator.Models.RiderUser", b =>
+                {
+                    b.HasOne("RideSimulator.Models.ApplicationUser", "User")
                         .WithOne("RiderUser")
-                        .HasForeignKey("Pathao.Models.RiderUser", "UserId")
+                        .HasForeignKey("RideSimulator.Models.RiderUser", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Pathao.Models.ApplicationUser", b =>
+            modelBuilder.Entity("RideSimulator.Models.ApplicationUser", b =>
                 {
                     b.Navigation("DriverUser")
                         .IsRequired();
 
                     b.Navigation("RiderUser")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RideSimulator.Models.DriverUser", b =>
+                {
+                    b.Navigation("RideRequests");
+                });
+
+            modelBuilder.Entity("RideSimulator.Models.RiderUser", b =>
+                {
+                    b.Navigation("RideRequests");
                 });
 #pragma warning restore 612, 618
         }
